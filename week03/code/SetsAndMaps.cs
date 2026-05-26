@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
 using System.Text.Json;
 
 public static class SetsAndMaps
@@ -21,35 +24,33 @@ public static class SetsAndMaps
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
     public static string[] FindPairs(string[] words)
     {
-public static List<string> FindPairs(List<string> words)
-{
-    HashSet<string> seen = new HashSet<string>();
-    List<string> result = new List<string>();
+        HashSet<string> seen = new HashSet<string>();
+        List<string> result = new List<string>();
 
-    foreach (string word in words)
-    {
-        char a = word[0];
-        char b = word[1];
-
-        // Skip words like "aa"
-        if (a == b)
-            continue;
-
-        string reversed = $"{b}{a}";
-
-        if (seen.Contains(reversed))
+        foreach (string word in words)
         {
-            result.Add($"{reversed} & {word}");
-        }
-        else
-        {
-            seen.Add(word);
-        }
-    }
+            if (word.Length != 2)
+                continue;
 
-    return result;
-}
-   
+            char a = word[0];
+            char b = word[1];
+
+            if (a == b)
+                continue;
+
+            string reversed = $"{b}{a}";
+
+            if (seen.Contains(reversed))
+            {
+                result.Add($"{reversed} & {word}");
+            }
+            else
+            {
+                seen.Add(word);
+            }
+        }
+
+        return result.ToArray();
     }
 
     /// <summary>
@@ -65,31 +66,21 @@ public static List<string> FindPairs(List<string> words)
     /// <returns>fixed array of divisors</returns>
     public static Dictionary<string, int> SummarizeDegrees(string filename)
     {
-        var degrees = new Dictionary<string, int>();
-        foreach (var line in File.ReadLines(filename))
+        Dictionary<string, int> degrees = new Dictionary<string, int>();
+
+        foreach (string line in File.ReadLines(filename))
         {
-           
-        public static Dictionary<string, int> SummarizeDegrees(string filename)
-{
-    Dictionary<string, int> degrees = new Dictionary<string, int>();
+            string[] parts = line.Split(',');
 
-    foreach (string line in File.ReadLines(filename))
-    {
-        string[] parts = line.Split(',');
+            if (parts.Length < 4)
+                continue;
 
-        if (parts.Length < 4)
-            continue;
+            string degree = parts[3].Trim();
 
-        string degree = parts[3].Trim();
-
-        if (degrees.ContainsKey(degree))
-            degrees[degree]++;
-        else
-            degrees[degree] = 1;
-    }
-
-    return degrees;
-}
+            if (degrees.ContainsKey(degree))
+                degrees[degree]++;
+            else
+                degrees[degree] = 1;
         }
 
         return degrees;
@@ -113,37 +104,34 @@ public static List<string> FindPairs(List<string> words)
     /// </summary>
     public static bool IsAnagram(string word1, string word2)
     {
-        public static bool IsAnagram(string word1, string word2)
-{
-    word1 = word1.Replace(" ", "").ToLower();
-    word2 = word2.Replace(" ", "").ToLower();
+        word1 = word1.Replace(" ", "").ToLower();
+        word2 = word2.Replace(" ", "").ToLower();
 
-    if (word1.Length != word2.Length)
-        return false;
-
-    Dictionary<char, int> counts = new Dictionary<char, int>();
-
-    foreach (char c in word1)
-    {
-        if (counts.ContainsKey(c))
-            counts[c]++;
-        else
-            counts[c] = 1;
-    }
-
-    foreach (char c in word2)
-    {
-        if (!counts.ContainsKey(c))
+        if (word1.Length != word2.Length)
             return false;
 
-        counts[c]--;
+        Dictionary<char, int> counts = new Dictionary<char, int>();
 
-        if (counts[c] == 0)
-            counts.Remove(c);
-    }
+        foreach (char c in word1)
+        {
+            if (counts.ContainsKey(c))
+                counts[c]++;
+            else
+                counts[c] = 1;
+        }
 
-    return counts.Count == 0;
-}
+        foreach (char c in word2)
+        {
+            if (!counts.ContainsKey(c))
+                return false;
+
+            counts[c]--;
+
+            if (counts[c] == 0)
+                counts.Remove(c);
+        }
+
+        return counts.Count == 0;
     }
 
     /// <summary>
@@ -162,47 +150,23 @@ public static List<string> FindPairs(List<string> words)
     /// </summary>
     public static string[] EarthquakeDailySummary()
     {
-      
+        string url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
+        using HttpClient client = new HttpClient();
 
-using System.Net.Http;
-using System.Text.Json;
-string url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
-using HttpClient client = new HttpClient();
+        string json = client.GetStringAsync(url).Result;
 
-string json = client.GetStringAsync(url).Result;
+        FeatureCollection data =
+            System.Text.Json.JsonSerializer.Deserialize<FeatureCollection>(json);
 
-FeatureCollection data =
-    System.Text.Json.JsonSerializer.Deserialize<FeatureCollection>(json);
+        List<string> result = new List<string>();
 
-List<string> result = new List<string>();
+        foreach (var feature in data.features)
+        {
+            string place = feature.properties.place;
+            double mag = feature.properties.mag ?? 0;
+            result.Add($"{place} - Mag {mag}");
+        }
 
-foreach (var feature in data.features)
-{
-    string place = feature.properties.place;
-    double mag = feature.properties.mag ?? 0;
-    result.Add($"{place} - Mag {mag}");
-}
-
-return result;
-        // TODO Problem 5:
-        // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
-        // on those classes so that the call to Deserialize above works properly.
-        // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
-        // 3. Return an array of these string descriptions.
-        return [];
+        return result.ToArray();
     }
-}public class FeatureCollection
-{
-    public List<Feature> features { get; set; }
-}
-
-public class Feature
-{
-    public Properties properties { get; set; }
-}
-
-public class Properties
-{
-    public string place { get; set; }
-    public double? mag { get; set; }
 }
