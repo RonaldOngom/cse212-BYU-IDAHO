@@ -21,8 +21,35 @@ public static class SetsAndMaps
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
     public static string[] FindPairs(string[] words)
     {
-        // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+public static List<string> FindPairs(List<string> words)
+{
+    HashSet<string> seen = new HashSet<string>();
+    List<string> result = new List<string>();
+
+    foreach (string word in words)
+    {
+        char a = word[0];
+        char b = word[1];
+
+        // Skip words like "aa"
+        if (a == b)
+            continue;
+
+        string reversed = $"{b}{a}";
+
+        if (seen.Contains(reversed))
+        {
+            result.Add($"{reversed} & {word}");
+        }
+        else
+        {
+            seen.Add(word);
+        }
+    }
+
+    return result;
+}
+   
     }
 
     /// <summary>
@@ -41,8 +68,28 @@ public static class SetsAndMaps
         var degrees = new Dictionary<string, int>();
         foreach (var line in File.ReadLines(filename))
         {
-            var fields = line.Split(",");
-            // TODO Problem 2 - ADD YOUR CODE HERE
+           
+        public static Dictionary<string, int> SummarizeDegrees(string filename)
+{
+    Dictionary<string, int> degrees = new Dictionary<string, int>();
+
+    foreach (string line in File.ReadLines(filename))
+    {
+        string[] parts = line.Split(',');
+
+        if (parts.Length < 4)
+            continue;
+
+        string degree = parts[3].Trim();
+
+        if (degrees.ContainsKey(degree))
+            degrees[degree]++;
+        else
+            degrees[degree] = 1;
+    }
+
+    return degrees;
+}
         }
 
         return degrees;
@@ -66,8 +113,37 @@ public static class SetsAndMaps
     /// </summary>
     public static bool IsAnagram(string word1, string word2)
     {
-        // TODO Problem 3 - ADD YOUR CODE HERE
+        public static bool IsAnagram(string word1, string word2)
+{
+    word1 = word1.Replace(" ", "").ToLower();
+    word2 = word2.Replace(" ", "").ToLower();
+
+    if (word1.Length != word2.Length)
         return false;
+
+    Dictionary<char, int> counts = new Dictionary<char, int>();
+
+    foreach (char c in word1)
+    {
+        if (counts.ContainsKey(c))
+            counts[c]++;
+        else
+            counts[c] = 1;
+    }
+
+    foreach (char c in word2)
+    {
+        if (!counts.ContainsKey(c))
+            return false;
+
+        counts[c]--;
+
+        if (counts[c] == 0)
+            counts.Remove(c);
+    }
+
+    return counts.Count == 0;
+}
     }
 
     /// <summary>
@@ -86,16 +162,28 @@ public static class SetsAndMaps
     /// </summary>
     public static string[] EarthquakeDailySummary()
     {
-        const string uri = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
-        using var client = new HttpClient();
-        using var getRequestMessage = new HttpRequestMessage(HttpMethod.Get, uri);
-        using var jsonStream = client.Send(getRequestMessage).Content.ReadAsStream();
-        using var reader = new StreamReader(jsonStream);
-        var json = reader.ReadToEnd();
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+      
 
-        var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
+using System.Net.Http;
+using System.Text.Json;
+string url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
+using HttpClient client = new HttpClient();
 
+string json = client.GetStringAsync(url).Result;
+
+FeatureCollection data =
+    System.Text.Json.JsonSerializer.Deserialize<FeatureCollection>(json);
+
+List<string> result = new List<string>();
+
+foreach (var feature in data.features)
+{
+    string place = feature.properties.place;
+    double mag = feature.properties.mag ?? 0;
+    result.Add($"{place} - Mag {mag}");
+}
+
+return result;
         // TODO Problem 5:
         // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
         // on those classes so that the call to Deserialize above works properly.
@@ -103,4 +191,18 @@ public static class SetsAndMaps
         // 3. Return an array of these string descriptions.
         return [];
     }
+}public class FeatureCollection
+{
+    public List<Feature> features { get; set; }
+}
+
+public class Feature
+{
+    public Properties properties { get; set; }
+}
+
+public class Properties
+{
+    public string place { get; set; }
+    public double? mag { get; set; }
 }

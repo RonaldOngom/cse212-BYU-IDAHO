@@ -32,7 +32,11 @@ public class Maze
     /// </summary>
     public void MoveLeft()
     {
-        // FILL IN CODE
+         if (!maze[current].left)
+        return false;
+
+    current = (current.x - 1, current.y);
+    return true;
     }
 
     /// <summary>
@@ -41,7 +45,11 @@ public class Maze
     /// </summary>
     public void MoveRight()
     {
-        // FILL IN CODE
+       if (!maze[current].right)
+        return false;
+
+    current = (current.x + 1, current.y);
+    return true;
     }
 
     /// <summary>
@@ -50,7 +58,11 @@ public class Maze
     /// </summary>
     public void MoveUp()
     {
-        // FILL IN CODE
+       if (!maze[current].up)
+        return false;
+
+    current = (current.x, current.y + 1);
+    return true;
     }
 
     /// <summary>
@@ -59,7 +71,11 @@ public class Maze
     /// </summary>
     public void MoveDown()
     {
-        // FILL IN CODE
+       if (!maze[current].down)
+        return false;
+
+    current = (current.x, current.y - 1);
+    return true;
     }
 
     public string GetStatus()
