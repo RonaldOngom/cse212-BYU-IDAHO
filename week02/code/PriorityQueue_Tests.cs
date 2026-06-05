@@ -35,30 +35,30 @@ public class PriorityQueueTests
     }
 
     [TestMethod]
-// TEST RESULT SUMMARY:
-// Expected: First enqueued item with same priority removed first
-// Actual: Test passed — FIFO behavior preserved
-// Error Found: None
-public void Dequeue_SamePriority_FollowsFIFO()
-{
-    PriorityQueue queue = new PriorityQueue();
-    queue.Enqueue("First", 3);
-    queue.Enqueue("Second", 3);
+    // TEST RESULT SUMMARY:
+    // Expected: First enqueued item with same priority removed first
+    // Actual: Test passed — FIFO behavior preserved
+    // Error Found: None
+    public void Dequeue_SamePriority_FollowsFIFO()
+    {
+        PriorityQueue queue = new PriorityQueue();
+        queue.Enqueue("First", 3);
+        queue.Enqueue("Second", 3);
 
-    string result = queue.Dequeue();
+        string result = queue.Dequeue();
 
-    Assert.AreEqual("First", result);
-}
+        Assert.AreEqual("First", result);
+    }
 
-[TestMethod]
-// TEST RESULT SUMMARY:
-// Expected: InvalidOperationException thrown
-// Actual: Test passed — exception thrown with correct message
-// Error Found: None
-[ExpectedException(typeof(InvalidOperationException))]
-public void Dequeue_EmptyQueue_ThrowsException()
-{
-    PriorityQueue queue = new PriorityQueue();
-    queue.Dequeue();
-}
+    [TestMethod]
+    // TEST RESULT SUMMARY:
+    // Expected: InvalidOperationException thrown
+    // Actual: Test passed — exception thrown with correct message
+    // Error Found: None
+    [ExpectedException(typeof(InvalidOperationException))]
+    public void Dequeue_EmptyQueue_ThrowsException()
+    {
+        PriorityQueue queue = new PriorityQueue();
+        queue.Dequeue();
+    }
 }
